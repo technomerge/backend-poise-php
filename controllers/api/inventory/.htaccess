@@ -1,0 +1,13 @@
+RewriteEngine On    # Turn on the rewriting engine
+RewriteRule ^read/([0-9a-zA-Z_-]*)$ read.php?id=$1 [NC,L]
+RewriteRule ^delete/([0-9]*)$ delete.php?id=$1 [NC,L]
+RewriteRule ^create create.php [NC,L]
+RewriteRule ^update/ update.php [NC,L]
+RewriteRule ^getInventory getInventory.php [NC,L]
+RewriteRule ^getInventoryList getInventoryList.php [NC,L]
+RewriteRule ^getInventoryInfo getInventoryInfo.php?id=$1 [NC,L]
+RewriteRule ^updateStatus/([0-9a-zA-Z_-]*)$ updateStatus.php?id=$1 [NC,L]
+RewriteRule ^updateProduct/([0-9a-zA-Z_-]*)$ updateProduct.php?id=$1 [NC,L]
+RewriteRule ^updateStockAllocated/([0-9a-zA-Z_-]*)$ updateStockAllocated.php?id=$1 [NC,L]
+RewriteRule ^verifyDuplicate/([0-9a-zA-Z_-]*)$ verifyDuplicate.php?id=$1 [NC,L]
+RewriteRule ^getProduct/([0-9a-zA-Z_-]*)$ getProduct.php?id=$1 [NC,L]
