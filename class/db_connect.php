@@ -3,9 +3,15 @@ $GLOBALS['servername']	= "192.168.1.195"; // OLD POISE;
 $GLOBALS['username']	= "bennett";
 $GLOBALS['password']	= "bennett";
 $GLOBALS['port']		= "3306";
-//$GLOBALS['dbname']	= "flpoise";
-$GLOBALS['dbname']		= "poise";
-	
+
+if (substr($_SERVER[REQUEST_URI],0,9) == "/devpoise"){
+	$GLOBALS['dbname']	= "flpoise";
+}
+else{
+	$GLOBALS['dbname']	= "poise";
+}
+
+
 function db_connection (){
 
 	$servername = $GLOBALS['servername'];
