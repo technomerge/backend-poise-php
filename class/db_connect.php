@@ -4,7 +4,15 @@ $GLOBALS['username']	= "bennett";
 $GLOBALS['password']	= "bennett";
 $GLOBALS['port']		= "3306";
 
-if (substr($_SERVER[REQUEST_URI],0,9) == "/devpoise"){
+if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+    $ip = $_SERVER['HTTP_CLIENT_IP'];
+} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+} else {
+    $ip = $_SERVER['REMOTE_ADDR'];
+}
+//echo $ip;	
+if($ip == "192.168.169.1" || $ip == "192.168.1.14"){
 	$GLOBALS['dbname']	= "flpoise";
 }
 else{
