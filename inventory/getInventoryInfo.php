@@ -1,9 +1,12 @@
 <?php
+
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 include('../class/Inventory.php');
 $api = new Inventory();
 
 $api->cors();
+
+
 
 switch($requestMethod) {
 	case 'GET':

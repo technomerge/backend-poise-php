@@ -18,14 +18,14 @@ class Inventory{
 	public function getInventoryInfo($invId) {		
 		$sqlQuery = '';
 		if($invId) {
-			$sqlQuery = "WHERE ID = '".$invId."'" . "OR SKU = '".$invId."'" ;
+			$sqlQuery = "WHERE ID = '".$invId."'" . " OR SKU = '".$invId."'" ;
 		}
 	
 		$invQuery = "
 			SELECT * 
 			FROM ".$this->table." $sqlQuery
 			";	
-	
+
 		$resultData = mysqli_query($this->dbConnect, $invQuery);
 
 		$invData = array();
