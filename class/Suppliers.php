@@ -14,7 +14,27 @@ class Suppliers{
 		header("Access-Control-Allow-Headers: X-Requested-With");
 	}
 		
-	
+	public function getSuppliersList() {
+		$getQuery="
+		SELECT 
+		id AS SUPPLIER_ID, name AS SUPPLIER_NAME, id, name AS supplier 
+		FROM
+		SUPPLIERS		
+		ORDER BY NAME;
+		";
+		
+		$resultData = mysqli_query($this->dbConnect, $getQuery);
+
+		$data = array();
+		while( $dataRecord = mysqli_fetch_assoc($resultData) ) {
+			$data[] = $dataRecord;
+		}
+		
+		header('Content-Type: application/json');
+		//echo '{"data":' . json_encode($data). ',"totalRecords":' . sizeof($data) . '}';
+		echo json_encode($data);			
+	}
+
 	public function getSuppliersListFiltered($data) {	
 		$params_status			= $data["status"];
 		$params_supplierName	= $data["supplierName"];
@@ -108,6 +128,57 @@ class Suppliers{
 		//echo json_encode($data);		
 		
 	}	
+
+	public function getSuppliersListPoFiltered($data) {	
+		$getQuery="
+		SELECT 
+		ID AS SUPPLIER_ID,
+		NAME AS SUPPLIER_NAME,
+		ID AS id,
+		name as supplier 
+		FROM
+		SUPPLIERS 
+		WHERE
+		1= case 
+			when '" . $data["status"] . "' !='' and STATUS = '" . $data["status"] . "' then 1 
+			when '" . $data["status"] . "' ='' then 1 
+			else 0 
+		end
 		
+		and
+		
+		(
+		1= case 
+			when '" . $data["supplierNameMode"] . "' ='starts' and '" . $data["supplierName"] . "' !='' and NAME like '" . $data["supplierName"] . "%' then 1 
+			when '" . $data["supplierNameMode"] . "' ='' then 1 
+			when '" . $data["supplierName"] . "' ='' then 1 
+			else 0 
+		end
+		
+		or
+		
+		1= case 
+			when '" . $data["supplierNameMode"] . "' ='contains' and '" . $data["supplierName"] . "' !='' and NAME like '%" . $data["supplierName"] . "%' then 1 
+			when '" . $data["supplierNameMode"] . "' ='' then 1 
+			when '" . $data["supplierName"] . "' ='' then 1 
+			else 0 
+		end	
+		)	
+						 
+		ORDER BY NAME;
+		";
+	
+		$resultData = mysqli_query($this->dbConnect, $getQuery);
+
+		$data = array();
+		while( $dataRecord = mysqli_fetch_assoc($resultData) ) {
+			$data[] = $dataRecord;
+		}
+		
+		header('Content-Type: application/json');
+		echo '{"data":' . json_encode($data). ',"totalRecords":' . sizeof($data) . '}';
+		//echo json_encode($data);		
+		
+	}	
 }
 ?>
