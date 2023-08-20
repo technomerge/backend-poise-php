@@ -262,5 +262,58 @@ class Purchasing{
 		echo json_encode($data);		
 		
 	}	
+
+	public function closePo($poId, $data) {	
+		//var_dump($data);
+		$notes = '';
+		if($data['updates'][0]['param'] == "NOTES"){
+			$notes = $data['updates'][0]['value'];
+		}
+		
+		
+		$query="
+		UPDATE 
+		PURCHASEORDERS
+		SET 
+		STATUS = 'CLOSED',
+		NOTES = \"$notes\" 
+		WHERE ID = '$poId'
+		";
+		
+		if( mysqli_query($this->dbConnect, $query)) {
+			$message = "PO closed";
+			$this->closePoItems($poId);
+			$success = 1;			
+		} else {
+			$message = "PO close failed.";
+			$success = 0;			
+		}
+		
+		header('Content-Type: application/json');
+		echo json_encode($message);		
+		
+	}	
+
+	public function closePoItems($poId) {	
+		$query="
+		UPDATE 
+		POITEMS
+		SET STATUS = 'CLOSED' 
+		WHERE PURCHASEORDERSID = '$poId'
+		";
+		
+		if( mysqli_query($this->dbConnect, $query)) {
+			$message = "POITEMS closed";
+			$success = 1;			
+		} else {
+			$message = "POITEMS close failed.";
+			$success = 0;			
+		}
+		
+		//header('Content-Type: application/json');
+		//echo json_encode($message);	
+		return $success;	
+		
+	}	
 }
 ?>
