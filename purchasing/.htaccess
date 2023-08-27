@@ -2,4 +2,7 @@ RewriteEngine On    # Turn on the rewriting engine
 RewriteRule ^getPoList/ getPoList.php [NC,L]
 RewriteRule ^getPoListAdv/ getPoListAdv.php [NC,L]
 RewriteRule ^getPoInfoReceipt/([0-9a-zA-Z_-]*)$ getPoInfoReceipt.php?id=$1 [NC,L]
+RewriteRule ^getPoReceiptDates/([0-9a-zA-Z_-]*)$ getPoReceiptDates.php?id=$1 [NC,L]
+RewriteRule ^getPoReceiptDetail/([0-9a-zA-Z_-]*)$ getPoReceiptDetail.php?id=$1 [NC,L]
+RewriteRule ^getPoReceiptSummary/([0-9a-zA-Z_-]*)$ getPoReceiptSummary.php?id=$1 [NC,L]
 RewriteRule ^closePo/([0-9a-zA-Z_-]*)$ closePo.php?id=$1 [NC,L]
