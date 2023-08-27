@@ -32,13 +32,171 @@ class Purchasing{
 		p.EMPLOYEEID,
 		p.ID,
 		e.FIRSTNAME,
-		e.LASTNAME 
+		e.LASTNAME ,
+		p.STATUS,
+		p.NOTES
 		FROM
 		PURCHASEORDERS p 
 		left join SUPPLIERS s on s.ID = p.SUPPLIERID 
 		left join EMPLOYEE e on e.ID = p.EMPLOYEEID 
 		WHERE 
 		p.ID = '$poId'
+		";
+		
+		$resultData = mysqli_query($this->dbConnect, $getQuery);
+
+		$data = array();
+		while( $dataRecord = mysqli_fetch_assoc($resultData) ) {
+			$data[] = $dataRecord;
+		}
+		
+		header('Content-Type: application/json');
+		//echo '{"data":' . json_encode($data). ',"totalRecords":' . sizeof($data) . '}';
+		echo json_encode($data);		
+		
+	}
+	
+	public function getPoReceiptDates($poId) {	
+
+		$getQuery="
+		SELECT 
+		DISTINCT DATERX,
+		SUM(QTY) AS TQTYORDERED,
+		SUM(QTYRECEIVED) AS TQTYRECEIVED
+		FROM 
+		POITEMS 
+		WHERE 
+		PURCHASEORDERSID='$poId' AND 
+		(POITEMS.STATUS='RECEIVED' OR POITEMS.STATUS='CLOSED') 
+		GROUP BY DATERX
+		ORDER BY DATERX
+		";
+		
+		$resultData = mysqli_query($this->dbConnect, $getQuery);
+
+		$data = array();
+		while( $dataRecord = mysqli_fetch_assoc($resultData) ) {
+			$data[] = $dataRecord;
+		}
+
+		//Updata totals in the array
+		for($i=0; $i<sizeof($data); $i++){
+			$qtyOrdered = $this->getPoTotalQtyDate($poId, $data[$i]['DATERX']);
+			$data[$i]['TQTYORDERED'] = $qtyOrdered[0]['QTYORDERED'];
+		}
+
+		header('Content-Type: application/json');
+		//echo '{"data":' . json_encode($data). ',"totalRecords":' . sizeof($data) . '}';
+		echo json_encode($data);		
+	}
+
+	public function getPoReceiptDetail($poId, $data) {	
+		$getQuery="
+		SELECT 
+		I.ID,
+		I.SKU, 
+		I.QTYSTOCK,
+		I.DESCRIPTION,
+		I.GLCODEPURCHASE,
+		P.VENDORSKU, 
+		SUM(P.QTY) AS QTY, 
+		SUM(P.QTYRECEIVED) AS QTYRECEIVED,
+		'0' AS QTYORDERED,
+		P.PRICE,
+		P.DATERX,
+		P.STATUS
+		FROM 
+		POITEMS P, INVENTORY I
+		WHERE 
+		I.ID = P.INVENTORYID AND 
+		P.PURCHASEORDERSID = '$poId' AND
+		P.STATUS IN ('RECEIVED', 'CLOSED')
+		GROUP BY P.DATERX, I.SKU 
+		ORDER BY P.DATERX, I.SKU;
+		";		
+
+		$resultData = mysqli_query($this->dbConnect, $getQuery);
+
+		$data = array();
+		while( $dataRecord = mysqli_fetch_assoc($resultData) ) {
+			$data[] = $dataRecord;
+		}
+
+		//Updata totals in the array
+		for($i=0; $i<sizeof($data); $i++){
+			$qtyOrdered = $this->getPoTotalQty($poId, $data[$i]['ID']);
+			$data[$i]['QTYORDERED'] = $qtyOrdered[0]['QTYORDERED'];
+		}
+
+		header('Content-Type: application/json');
+		//echo '{"data":' . json_encode($data). ',"totalRecords":' . sizeof($data) . '}';
+		echo json_encode($data);		
+		
+	}
+
+	public function getPoTotalQty($poId, $invId){
+		$getQuery="
+		SELECT 
+		SUM(P.QTY) AS QTYORDERED
+		FROM 
+		POITEMS P, INVENTORY I
+		WHERE 
+		I.ID = P.INVENTORYID AND 
+		P.PURCHASEORDERSID = '$poId' AND
+		P.INVENTORYID = '$invId'
+		GROUP BY P.PURCHASEORDERSID, P.INVENTORYID
+		";		
+		
+		$resultData = mysqli_query($this->dbConnect, $getQuery);
+
+		$data = array();
+		while( $dataRecord = mysqli_fetch_assoc($resultData) ) {
+			$data[] = $dataRecord;
+		}
+		return $data;
+	}
+
+	public function getPoTotalQtyDate($poId){
+		$getQuery="
+		SELECT 
+		SUM(P.QTY) AS QTYORDERED
+		FROM 
+		POITEMS P, INVENTORY I
+		WHERE 
+		I.ID = P.INVENTORYID AND 
+		P.PURCHASEORDERSID = '$poId'
+		GROUP BY P.PURCHASEORDERSID
+		";		
+	
+		$resultData = mysqli_query($this->dbConnect, $getQuery);
+
+		$data = array();
+		while( $dataRecord = mysqli_fetch_assoc($resultData) ) {
+			$data[] = $dataRecord;
+		}
+
+		return $data;
+	}	
+
+	public function getPoReceiptSummary($poId) {	
+		$getQuery="
+		SELECT 
+		I.ID,
+		I.SKU, 
+		I.QTYSTOCK,
+		I.DESCRIPTION,
+		I.GLCODEPURCHASE,
+		P.VENDORSKU, 
+		SUM(P.QTY) AS QTY, 
+		SUM(P.QTYRECEIVED) AS QTYRECEIVED, 
+		P.PRICE
+		FROM 
+		POITEMS P, INVENTORY I
+		WHERE 
+		I.ID=P.INVENTORYID AND 
+		P.PURCHASEORDERSID='$poId' 
+		GROUP BY I.SKU 
+		ORDER BY I.SKU
 		";
 		
 		$resultData = mysqli_query($this->dbConnect, $getQuery);
@@ -262,5 +420,58 @@ class Purchasing{
 		echo json_encode($data);		
 		
 	}	
-}
+
+	public function closePo($poId, $data) {	
+		//var_dump($data);
+		$notes = '';
+		if($data['updates'][0]['param'] == "NOTES"){
+			$notes = $data['updates'][0]['value'];
+		}
+		
+		
+		$query="
+		UPDATE 
+		PURCHASEORDERS
+		SET 
+		STATUS = 'CLOSED',
+		NOTES = \"$notes\" 
+		WHERE ID = '$poId'
+		";
+		
+		if( mysqli_query($this->dbConnect, $query)) {
+			$message = "PO closed";
+			$this->closePoItems($poId);
+			$success = 1;			
+		} else {
+			$message = "PO close failed.";
+			$success = 0;			
+		}
+		
+		header('Content-Type: application/json');
+		echo json_encode($message);		
+		
+	}	
+
+	public function closePoItems($poId) {	
+		$query="
+		UPDATE 
+		POITEMS
+		SET STATUS = 'CLOSED' 
+		WHERE PURCHASEORDERSID = '$poId'
+		";
+		
+		if( mysqli_query($this->dbConnect, $query)) {
+			$message = "POITEMS closed";
+			$success = 1;			
+		} else {
+			$message = "POITEMS close failed.";
+			$success = 0;			
+		}
+		
+		//header('Content-Type: application/json');
+		//echo json_encode($message);	
+		return $success;	
+		
+	}	
+}		
 ?>
