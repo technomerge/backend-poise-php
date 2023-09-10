@@ -472,5 +472,28 @@ class Purchasing{
 		return $success;	
 		
 	}	
+
+	public function openPo($poId, $data) {	
+
+		$query="
+		UPDATE 
+		PURCHASEORDERS
+		SET 
+		STATUS = 'OPEN'
+		WHERE ID = '$poId'
+		";
+		
+		if( mysqli_query($this->dbConnect, $query)) {
+			$message = "PO opened";
+			$success = 1;			
+		} else {
+			$message = "PO open failed.";
+			$success = 0;			
+		}
+		
+		header('Content-Type: application/json');
+		echo json_encode($message);		
+		
+	}
 }		
 ?>
