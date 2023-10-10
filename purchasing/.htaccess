@@ -7,3 +7,4 @@ RewriteRule ^getPoReceiptDetail/([0-9a-zA-Z_-]*)$ getPoReceiptDetail.php?id=$1 [
 RewriteRule ^getPoReceiptSummary/([0-9a-zA-Z_-]*)$ getPoReceiptSummary.php?id=$1 [NC,L]
 RewriteRule ^closePo/([0-9a-zA-Z_-]*)$ closePo.php?id=$1 [NC,L]
 RewriteRule ^openPo/([0-9a-zA-Z_-]*)$ openPo.php?id=$1 [NC,L]
+RewriteRule ^receivePo/([0-9a-zA-Z_-]*)$ receivePo.php?id=$1 [NC,L]

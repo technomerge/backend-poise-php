@@ -197,7 +197,7 @@ class Inventory{
 		WHERE
 		ID=$accId;
 		";
-			
+	
 		$resultData = mysqli_query($this->dbConnect, $getQuery);
 
 		$data = array();
@@ -257,7 +257,7 @@ class Inventory{
 		WHERE
 		SKU='$sku';
 		";
-//echo $getQuery;	
+		//echo $getQuery;	
 		$resultData = mysqli_query($this->dbConnect, $getQuery);
 
 		$data = array();
@@ -462,16 +462,16 @@ class Inventory{
 	}
 
 	public function insertInventory($data){ 		
-/*
-"ID":null,
-ACCOUNTSKU":"100",
-"NAME":"Test 100 Name",
-"DESCRIPTION":"Test 100 Description",
-"DETAILS":"Test 100 Details",
+		/*
+		"ID":null,
+		ACCOUNTSKU":"100",
+		"NAME":"Test 100 Name",
+		"DESCRIPTION":"Test 100 Description",
+		"DETAILS":"Test 100 Details",
 
-"ITEMS":[{"COLOR":["02"],"SIZE":"SML","PRICE":"20","WEIGHT":"16","COST":"10","BINNUMBER":"A-B-1"}],
-"OPTIONS":[{"CODE":"M","DESCRIPTION":"Manager"}]}: 
-*/
+		"ITEMS":[{"COLOR":["02"],"SIZE":"SML","PRICE":"20","WEIGHT":"16","COST":"10","BINNUMBER":"A-B-1"}],
+		"OPTIONS":[{"CODE":"M","DESCRIPTION":"Manager"}]}: 
+		*/
 
 		$accId	= $data["ACCOUNTID"];
 		$bucket	= $this->getPriceBucket($accId);
@@ -731,16 +731,16 @@ ACCOUNTSKU":"100",
 	}
 	
 	public function updateProduct($data){ 		
-/*
-"ID":null,
-ACCOUNTSKU":"100",
-"NAME":"Test 100 Name",
-"DESCRIPTION":"Test 100 Description",
-"DETAILS":"Test 100 Details",
+		/*
+		"ID":null,
+		ACCOUNTSKU":"100",
+		"NAME":"Test 100 Name",
+		"DESCRIPTION":"Test 100 Description",
+		"DETAILS":"Test 100 Details",
 
-"ITEMS":[{"COLOR":["02"],"SIZE":"SML","PRICE":"20","WEIGHT":"16","COST":"10","BINNUMBER":"A-B-1"}],
-"OPTIONS":[{"CODE":"M","DESCRIPTION":"Manager"}]}: 
-*/
+		"ITEMS":[{"COLOR":["02"],"SIZE":"SML","PRICE":"20","WEIGHT":"16","COST":"10","BINNUMBER":"A-B-1"}],
+		"OPTIONS":[{"CODE":"M","DESCRIPTION":"Manager"}]}: 
+		*/
 
 		$accId	= $data["ACCOUNTID"];
 		$bucket	= $this->getPriceBucket($accId);
@@ -762,8 +762,8 @@ ACCOUNTSKU":"100",
 							$rootSku					= $data["ID"];
 							$inventorySku				= $rootSku . $data["OPTIONS"][$i]["CODE"] . $data["ITEMS"][$j]["COLOR"][$k] . '-' . $data["ITEMS"][$j]["SIZE"];
 							$inventoryId				= $this->getInventoryId($inventorySku);
-//echo "WAP: " . 	$inventorySku . " | " . $inventoryId;
-//echo "Test";			
+		//echo "WAP: " . 	$inventorySku . " | " . $inventoryId;
+		//echo "Test";			
 							if(!$inventoryId){
 								$inventoryId 			= 0;
 								$creationDate			= "NOW()";
@@ -990,7 +990,7 @@ ACCOUNTSKU":"100",
 				VALUES $values				
 				";
 		var_dump($query);
-exit();		
+		exit();		
 		$updateQuery="
 				UPDATE ".$this->table." 
 				SET PRICE7 = PRICE$bucket 
