@@ -495,5 +495,56 @@ class Purchasing{
 		echo json_encode($message);		
 		
 	}
+
+	public function receivePo($poId, $data) {	
+		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		} else {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+	
+		if($ip == "192.168.169.1" || $ip == "192.168.1.14"){
+			$db_name = 'flpoise';
+		}
+		else{
+			$db_name = 'poise';
+		}
+
+		$poitems = json_decode($data, TRUE); //TRUE will convert json into associative array
+
+		for($i=0; $i<sizeof($poitems['updates'][9]['value']); $i++){
+			$poitems_array[$i] = $poitems['updates'][9]['value'][$i]['qtytoreceive'];
+		}
+	
+		$poitems_serialized = implode(";",$poitems_array);
+	
+		$success = FALSE;
+		$ch = curl_init("http://192.168.1.194/poise/PO/MarkPOReceived_v2.php?");
+		$curl_param  = "&db_name=" . $db_name;
+		$curl_param .= "&POid=" . $poId;
+		$curl_param .= "&poStatus=" . $poitems['updates'][6]['value'];
+		$curl_param .= "&poNotes=" . $poitems['updates'][8]['value'];
+		$curl_param .= "&poItems=" . $poitems_serialized;
+		
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $curl_param);
+		
+		$success = curl_exec($ch);
+		curl_close($ch);
+
+		if($success){
+			$message = "PO received";
+		}
+		else{
+			$message = "Failed to receive PO";
+		}
+
+		
+		header('Content-Type: application/json');
+		echo json_encode($message);		
+		
+	}	
 }		
 ?>
