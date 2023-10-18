@@ -111,7 +111,7 @@ class Purchasing{
 		I.ID = P.INVENTORYID AND 
 		P.PURCHASEORDERSID = '$poId' 
 		GROUP BY P.DATERX, I.VENDORSKU, I.SKU 
-		ORDER BY P.DATERX, I.VENDORSKU, I.SKU;
+		ORDER BY P.DATERX DESC, I.SKU ASC;
 		";		
 
 		$resultData = mysqli_query($this->dbConnect, $getQuery);
