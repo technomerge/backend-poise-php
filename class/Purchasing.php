@@ -96,7 +96,7 @@ class Purchasing{
 		I.ID,
 		I.SKU, 
 		I.QTYSTOCK,
-		I.DESCRIPTION,
+		unhex(replace(hex(I.DESCRIPTION), 'A0', '20')) AS DESCRIPTION,
 		I.GLCODEPURCHASE,
 		P.VENDORSKU, 
 		SUM(P.QTY) AS QTY, 
