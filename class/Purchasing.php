@@ -69,7 +69,7 @@ class Purchasing{
 		PURCHASEORDERSID='$poId' AND 
 		(POITEMS.STATUS='RECEIVED' OR POITEMS.STATUS='CLOSED') 
 		GROUP BY DATERX
-		ORDER BY DATERX
+		ORDER BY DATERX DESC
 		";
 		
 		$resultData = mysqli_query($this->dbConnect, $getQuery);
