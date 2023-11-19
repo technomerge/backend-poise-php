@@ -69,7 +69,7 @@ class Purchasing{
 		PURCHASEORDERSID='$poId' AND 
 		(POITEMS.STATUS='RECEIVED' OR POITEMS.STATUS='CLOSED') 
 		GROUP BY DATERX
-		ORDER BY DATERX
+		ORDER BY DATERX DESC
 		";
 		
 		$resultData = mysqli_query($this->dbConnect, $getQuery);
@@ -96,7 +96,7 @@ class Purchasing{
 		I.ID,
 		I.SKU, 
 		I.QTYSTOCK,
-		I.DESCRIPTION,
+		unhex(replace(hex(I.DESCRIPTION), 'A0', '20')) AS DESCRIPTION,
 		I.GLCODEPURCHASE,
 		P.VENDORSKU, 
 		SUM(P.QTY) AS QTY, 
@@ -109,6 +109,7 @@ class Purchasing{
 		POITEMS P, INVENTORY I
 		WHERE 
 		I.ID = P.INVENTORYID AND 
+		P.STATUS = 'RECEIVED' AND
 		P.PURCHASEORDERSID = '$poId' 
 		GROUP BY P.DATERX, I.VENDORSKU, I.SKU 
 		ORDER BY P.DATERX DESC, I.SKU ASC;
@@ -141,6 +142,7 @@ class Purchasing{
 		POITEMS P, INVENTORY I
 		WHERE 
 		I.ID = P.INVENTORYID AND 
+		P.STATUS = 'RECEIVED' AND
 		P.PURCHASEORDERSID = '$poId' AND
 		P.INVENTORYID = '$invId'
 		GROUP BY P.PURCHASEORDERSID, P.INVENTORYID
@@ -155,7 +157,7 @@ class Purchasing{
 		return $data;
 	}
 
-	public function getPoTotalQtyDate($poId){
+	public function getPoTotalQtyDate($poId, $dateRx){
 		$getQuery="
 		SELECT 
 		SUM(P.QTY) AS QTYORDERED
@@ -163,8 +165,10 @@ class Purchasing{
 		POITEMS P, INVENTORY I
 		WHERE 
 		I.ID = P.INVENTORYID AND 
+		P.DATERX = '$dateRx' AND
+		P.STATUS = 'RECEIVED' AND
 		P.PURCHASEORDERSID = '$poId' 
-		GROUP BY P.PURCHASEORDERSID
+		GROUP BY P.PURCHASEORDERSID, P.DATERX
 		";		
 	
 		$resultData = mysqli_query($this->dbConnect, $getQuery);
